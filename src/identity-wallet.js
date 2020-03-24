@@ -136,13 +136,13 @@ class IdentityWallet {
    * @param     {Array<Object>}     opts.authData   The authData for this identity
    * @return    {Object}                            The public keys for the requested spaces of this identity
    */
-  async authenticate (spaces = [], { authData } = {}, origin) {
+  async authenticate (spaces = [], { authData, mgmtPub } = {}, origin) {
     if (!this._keyring) await this._initKeyring(authData)
     if (!(await this.getConsent(spaces, origin))) {
       throw new Error('Authentication not authorized by user')
     }
     const result = {
-      main: this._keyring.getPublicKeys(),
+      main: this._keyring.getPublicKeys({ mgmtPub }),
       spaces: {}
     }
     spaces.map(space => {

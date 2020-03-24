@@ -23,7 +23,8 @@ describe('Keyring', () => {
     keyring1 = new Keyring(seed)
 
     expect(keyring1.getPublicKeys()).toMatchSnapshot()
-    expect(keyring1.getPublicKeys(true)).toMatchSnapshot()
+    expect(keyring1.getPublicKeys({ mgmtPub: true })).toMatchSnapshot()
+    expect(keyring1.getPublicKeys({ uncompressed: true })).toMatchSnapshot()
     expect(keyring1.serialize()).toEqual(seed)
   })
 
