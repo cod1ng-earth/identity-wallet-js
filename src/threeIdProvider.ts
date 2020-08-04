@@ -10,6 +10,8 @@ import {
 
 import { EncryptedMessage } from './crypto'
 import IdentityWallet from './identity-wallet'
+import { toStableObject } from './utils'
+import { createJWS } from 'did-jwt'
 
 type Origin = string | null | undefined
 
@@ -46,6 +48,15 @@ const methods: HandlerMethods<Context> = {
       expiresIn: params.expiresIn,
       useMgmt: params.useMgmt,
     })
+  },
+  '3id_signJws': async (ctx, params) => {
+      if (!(await ctx.provider.wallet.isAuthenticated([], ctx.origin))) {
+        throw new Error('Authentication required');
+      }
+      const signer = ctx.provider.wallet.getRootSigner(params.pubKeyId)
+      const header = params.protected ? toStableObject(params.protected) : undefined
+      const jws = await createJWS(toStableObject(params.payload), signer, header)
+      return { jws }
   },
   '3id_encrypt': async (ctx, params) => {
     return await ctx.provider.wallet.encrypt(params.message, params.space, {
